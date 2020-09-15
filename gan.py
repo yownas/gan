@@ -201,6 +201,7 @@ if __name__ == "__main__":
     IMG_W = 64
     IMG_C = 3
     latent_dim = 128
+    batch_size = 32
     num_epochs = 300
     epochs_per_epoch = 1
    
@@ -233,10 +234,10 @@ if __name__ == "__main__":
         print("  config.py")
         f = open(os.path.join(projpath, "config.py"), "w")
         f.write("# Change things below\n\n")
-        f.write("IMG_H = 64\n")
-        f.write("IMG_W = 64\n")
-        f.write("IMG_C = 3 # 1 = Grayscale, 3 = RGB\n\n")
-        f.write("batch_size = 32\n")
+        f.write("IMG_H = "+IMG_H+"\n")
+        f.write("IMG_W = "+IMG_W+"\n")
+        f.write("IMG_C = "+IMG_C+" # 1 = Grayscale, 3 = RGB\n\n")
+        f.write("batch_size = "+batch_size+"\n")
         f.close()
 
         print("  state.py")
@@ -286,18 +287,9 @@ if __name__ == "__main__":
     # Copy project (not data)
     #   copy <project> <new project>
 
-
-
-    ## Hyperparameters
-    #batch_size = 32
-    ##batch_size = 8
-
     data = os.path.join(projpath, "data")
     images_path = glob(data+"/*.jpg")
     images_path.extend(glob(data+"/*.png"))
-
-    print(images_path)
-    sys.exit(123)
 
     d_model = build_discriminator()
     g_model = build_generator(latent_dim)
@@ -334,15 +326,17 @@ if __name__ == "__main__":
     for epoch in range(num_epochs):
         print("\nEPOCH %i/%i\n" % (epoch, num_epochs))
         gan.fit(images_dataset, epochs=epochs_per_epoch)
-        g_model.save("saved_model/g_model.h5")
-        d_model.save("saved_model/d_model.h5")
+        #g_model.save("saved_model/g_model.h5")
+        #d_model.save("saved_model/d_model.h5")
+        g_model.save(os.path.join(projpath, "model/g_model.h5"))
+        d_model.save(os.path.join(projpath, "model/d_model.h5"))
 
-        # FIXME
-        # Write log here?
         # Dump status to a status.py file that can be read
+        f = open(os.path.join(projpath, "state.py"), "w")
+        f.write("# Current epoch: ",plot_offset+epoch,"\n")
+        f.write("plot_offset = ",plot_offset+epoch,"\n")
+        f.close()
 
         examples = g_model.predict(noise)
         save_plot(examples, epoch + plot_offset, int(np.sqrt(n_samples)))
 
-
-    ##
