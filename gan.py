@@ -278,8 +278,15 @@ if __name__ == "__main__":
             usage()
 
         projpath = os.path.join(projdir, opt1)  
-        print("Resume: ",project)
+        exec(open(os.path.join(projpath, "config.py")).read())
+        exec(open(os.path.join(projpath, "state.py")).read())
 
+        g_model.load_weights(os.path.join(projpath, "model/g_model.h5"))
+        d_model.load_weights(os.path.join(projpath, "model/g_model.h5"))
+
+        noise = np.load(os.path.join(projpath, "model/noise.npy"))
+
+        print("Resume: ",project)
 
     # ?
     # Show status of project and exit
