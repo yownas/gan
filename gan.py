@@ -193,9 +193,20 @@ if __name__ == "__main__":
     # Load project and continue (read status.py)
     #   resume <project> <epochs>
 
-   # FIXME
-   # Read global config from cwd?
+    # FIXME
+    # Read global config from cwd?
+
+    # Default values
+    IMG_H = 64
+    IMG_W = 64
+    IMG_C = 3
+    latent_dim = 128
+    num_epochs = 300
+    epochs_per_epoch = 1
    
+    projdir = "projects"
+    n_samples = 1
+
     try:
         cmd = sys.argv[1]
     except:
@@ -209,29 +220,32 @@ if __name__ == "__main__":
         except:
             usage()
 	# Create folders and config file
-        projdir = "projects"
-        path = os.path.join(projdir, opt1)  
+        projpath = os.path.join(projdir, opt1)  
         print("Creating:")
-        print("  ",path)
-        os.makedirs(path)
+        print("  ",projpath)
+        os.makedirs(projpath)
         for subdir in ('data', 'model', 'samples'):
-            print("  ",subdir)
-            os.makedirs(os.path.join(path, subdir))
+            print("    ",subdir)
+            os.makedirs(os.path.join(projpath, subdir))
 
         # skel -> projects/<project>/config.py
         # touch -> projects/<project>/state.py
-        f = open(os.path.join(projdir, "config.py"), "xw")
-        f.write("# Change things below")
-        f.write("IMG_H = 64")
-        f.write("IMG_W = 64")
-        f.write("IMG_C = 3 # 1 = Grayscale, 3 = RGB")
-        f.write("batch_size = 32")
+        print("  config.py")
+        f = open(os.path.join(projpath, "config.py"), "w")
+        f.write("# Change things below\n\n")
+        f.write("IMG_H = 64\n")
+        f.write("IMG_W = 64\n")
+        f.write("IMG_C = 3 # 1 = Grayscale, 3 = RGB\n\n")
+        f.write("batch_size = 32\n")
         f.close()
 
-        f = open(os.path.join(projdir, "state.py"), "xw")
-        f.write("# No state saved yet.")
+        print("  state.py")
+        f = open(os.path.join(projpath, "state.py"), "w")
+        f.write("# No state saved yet.\n")
         f.close()
 
+        print("Done...")
+        print("Fill data folder with images and train.")
         sys.exit(0)
 
     elif (cmd == "train"):
@@ -241,7 +255,19 @@ if __name__ == "__main__":
         except:
             usage()
 
-        print("Train: ",project)
+        projpath = os.path.join(projdir, opt1)  
+        exec(open(os.path.join(projpath, "config.py")).read())
+
+        # FIXME
+        # Check if there is a state already, refuse to overwrite
+
+        # Make some noise
+        noise = np.random.normal(size=(n_samples, latent_dim))
+        np.save(os.path.join(projpath, "model/noise.np"), noise)
+        plot_offset=0
+
+        epochs = opt2
+        print("Training",opt1,"for",epochs,"epochs.")
 
     elif (cmd == "resume"):
         try:
@@ -250,6 +276,7 @@ if __name__ == "__main__":
         except:
             usage()
 
+        projpath = os.path.join(projdir, opt1)  
         print("Resume: ",project)
 
 
@@ -259,41 +286,36 @@ if __name__ == "__main__":
     # Copy project (not data)
     #   copy <project> <new project>
 
-    #IMG_H = 64
-    #IMG_W = 64
-    IMG_H = 512
-    IMG_W = 256
-    #IMG_C = 3
-    IMG_C = 1
 
 
     ## Hyperparameters
-    batch_size = 32
-    #batch_size = 8
-    latent_dim = 128
-    num_epochs = 300
-    epochs_per_epoch = 1
-    images_path = glob("data/*.jpg")
+    #batch_size = 32
+    ##batch_size = 8
+
+    data = os.path.join(projpath, "data")
+    images_path = glob(data+"/*.jpg")
+    images_path.extend(glob(data+"/*.png"))
+
+    print(images_path)
+    sys.exit(123)
 
     d_model = build_discriminator()
     g_model = build_generator(latent_dim)
 
-    n_samples = 1
-
     ############################
 
     # Read old model & noise? CHANGE PLOT OFFSET
-    if (True):
-    #if (False):
-        plot_offset=200
-        d_model.load_weights("saved_model/d_model.h5")
-        g_model.load_weights("saved_model/g_model.h5")
-        noise = np.load("saved_model/noise.npy")
-    else:
-        # Make some noise
-        noise = np.random.normal(size=(n_samples, latent_dim))
-        np.save("saved_model/noise", noise)
-        plot_offset=0
+#    if (True):
+#    #if (False):
+#        plot_offset=200
+#        d_model.load_weights("saved_model/d_model.h5")
+#        g_model.load_weights("saved_model/g_model.h5")
+#        noise = np.load("saved_model/noise.npy")
+#    else:
+#        # Make some noise
+#        noise = np.random.normal(size=(n_samples, latent_dim))
+#        np.save("saved_model/noise", noise)
+#        plot_offset=0
 
     #############################
 
