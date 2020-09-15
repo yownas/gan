@@ -176,7 +176,7 @@ def save_plot(examples, epoch, n):
     pyplot.close()
 
 def usage():
-    print("Help.")
+    print("gan.py help | create <project> | train|resume <project> <epochs>")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -189,9 +189,9 @@ if __name__ == "__main__":
     # Create stub folders for new project
     #   create <project>
     # Start training new project
-    #   train <project> <steps>
+    #   train <project> <epochs>
     # Load project and continue (read status.py)
-    #   resume <project> <steps>
+    #   resume <project> <epochs>
 
    # FIXME
    # Read global config from cwd?
@@ -220,6 +220,17 @@ if __name__ == "__main__":
 
         # skel -> projects/<project>/config.py
         # touch -> projects/<project>/state.py
+        f = open(os.path.join(projdir, "config.py"), "xw")
+        f.write("# Change things below")
+        f.write("IMG_H = 64")
+        f.write("IMG_W = 64")
+        f.write("IMG_C = 3 # 1 = Grayscale, 3 = RGB")
+        f.write("batch_size = 32")
+        f.close()
+
+        f = open(os.path.join(projdir, "state.py"), "xw")
+        f.write("# No state saved yet.")
+        f.close()
 
         sys.exit(0)
 
@@ -230,12 +241,16 @@ if __name__ == "__main__":
         except:
             usage()
 
+        print("Train: ",project)
+
     elif (cmd == "resume"):
         try:
             opt1 = sys.argv[2]
             opt2 = sys.argv[3]
         except:
             usage()
+
+        print("Resume: ",project)
 
 
     # ?
