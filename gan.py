@@ -19,7 +19,7 @@ def load_image(image_path):
         img = tf.io.decode_jpeg(img, channels=1)
     else:
         img = tf.io.decode_jpeg(img)
-    img = tf.image.resize_with_crop_or_pad(img, IMG_H, IMG_W)
+    img = tf.image.resize(img, [IMG_H, IMG_W])
     img = tf.cast(img, tf.float32)
     img = (img - 127.5) / 127.5
     return img
