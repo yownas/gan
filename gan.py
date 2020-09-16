@@ -290,7 +290,8 @@ if __name__ == "__main__":
 
         noise = np.load(os.path.join(projpath, "model/noise.npy"))
 
-        print("Resume: ",project)
+        num_epochs = opt2
+        print("Resume training",opt1,"for",num_epochs,"epochs.")
 
     # ?
     # Show status of project and exit
