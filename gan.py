@@ -266,6 +266,9 @@ if __name__ == "__main__":
         # FIXME
         # Check if there is a state already, refuse to overwrite
 
+        d_model = build_discriminator()
+        g_model = build_generator(latent_dim)
+
         # Make some noise
         noise = np.random.normal(size=(n_samples, latent_dim))
         np.save(os.path.join(projpath, "model/noise.np"), noise)
@@ -285,6 +288,9 @@ if __name__ == "__main__":
         exec(open(os.path.join(projpath, "config.py")).read())
         exec(open(os.path.join(projpath, "state.py")).read())
 
+        d_model = build_discriminator()
+        g_model = build_generator(latent_dim)
+
         g_model.load_weights(os.path.join(projpath, "model/g_model.h5"))
         d_model.load_weights(os.path.join(projpath, "model/g_model.h5"))
 
@@ -302,9 +308,6 @@ if __name__ == "__main__":
     data = os.path.join(projpath, "data")
     images_path = glob(data+"/*.jpg")
     images_path.extend(glob(data+"/*.png"))
-
-    d_model = build_discriminator()
-    g_model = build_generator(latent_dim)
 
     ############################
 
