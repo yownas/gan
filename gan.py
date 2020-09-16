@@ -274,8 +274,8 @@ if __name__ == "__main__":
         np.save(os.path.join(projpath, "model", "noise.npy"), noise)
         plot_offset=0
 
-        num_epochs = opt2
-        print("Training",opt1,"for",num_epochs,"epochs.")
+        num_epochs = int(opt2)
+        print("Training",opt1,"for",str(num_epochs),"epochs.")
 
     elif (cmd == "resume"):
         try:
@@ -296,8 +296,8 @@ if __name__ == "__main__":
 
         noise = np.load(os.path.join(projpath, "model/noise.npy"))
 
-        num_epochs = opt2
-        print("Resume training",opt1,"for",num_epochs,"epochs.")
+        num_epochs = int(opt2)
+        print("Resume training",opt1,"for",str(num_epochs),"epochs.")
 
     # ?
     # Show status of project and exit
