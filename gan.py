@@ -271,7 +271,7 @@ if __name__ == "__main__":
 
         # Make some noise
         noise = np.random.normal(size=(n_samples, latent_dim))
-        np.save(os.path.join(projpath, "model/noise.np"), noise)
+        np.save(os.path.join(projpath, "model", "noise.npy"), noise)
         plot_offset=0
 
         num_epochs = opt2
@@ -291,8 +291,8 @@ if __name__ == "__main__":
         d_model = build_discriminator()
         g_model = build_generator(latent_dim)
 
-        d_model.load_weights(os.path.join(projpath, "model/d_model.h5"))
-        g_model.load_weights(os.path.join(projpath, "model/g_model.h5"))
+        d_model.load_weights(os.path.join(projpath, "model", "d_model.h5"))
+        g_model.load_weights(os.path.join(projpath, "model", "g_model.h5"))
 
         noise = np.load(os.path.join(projpath, "model/noise.npy"))
 
