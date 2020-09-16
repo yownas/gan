@@ -206,7 +206,7 @@ if __name__ == "__main__":
     IMG_C = 3
     latent_dim = 128
     batch_size = 32
-    num_epochs = 300
+    num_epochs = 10
     epochs_per_epoch = 1
    
     projdir = "projects"
@@ -271,8 +271,8 @@ if __name__ == "__main__":
         np.save(os.path.join(projpath, "model/noise.np"), noise)
         plot_offset=0
 
-        epochs = opt2
-        print("Training",opt1,"for",epochs,"epochs.")
+        num_epochs = opt2
+        print("Training",opt1,"for",num_epochs,"epochs.")
 
     elif (cmd == "resume"):
         try:
