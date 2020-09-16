@@ -174,7 +174,8 @@ def save_plot(examples, epoch, n):
 
         pyplot.imshow(img)
 
-    filename = f"samples/generated_plot_epoch-{epoch+1}.png"
+    filename = f"samples/epoch-{epoch+1}.png"
+    filename = os.path.join(projpath, filename)
     pyplot.savefig(filename)
     pyplot.close()
 
