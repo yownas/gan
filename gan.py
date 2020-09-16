@@ -348,8 +348,8 @@ if __name__ == "__main__":
 
         # Dump status to a status.py file that can be read
         f = open(os.path.join(projpath, "state.py"), "w")
-        f.write("# Current epoch: "+str(plot_offset+epoch)+"\n")
-        f.write("plot_offset = "+str(plot_offset+epoch)+"\n")
+        f.write("# Current epoch: "+str(plot_offset+epoch+1)+"\n")
+        f.write("plot_offset = "+str(plot_offset+epoch+1)+"\n")
         f.close()
 
         examples = g_model.predict(noise)
