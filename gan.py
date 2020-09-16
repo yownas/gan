@@ -15,7 +15,10 @@ w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.02)
 
 def load_image(image_path):
     img = tf.io.read_file(image_path)
-    img = tf.io.decode_jpeg(img, channels=1)
+    if IMG_C == 1:
+        img = tf.io.decode_jpeg(img, channels=1)
+    else:
+        img = tf.io.decode_jpeg(img)
     img = tf.image.resize_with_crop_or_pad(img, IMG_H, IMG_W)
     img = tf.cast(img, tf.float32)
     img = (img - 127.5) / 127.5
@@ -246,7 +249,7 @@ if __name__ == "__main__":
         f.close()
 
         print("Done...")
-        print("Fill data folder with images and train.")
+        print("Fill data folder with images, edit config.txt to suit your needs. And then train.")
         sys.exit(0)
 
     elif (cmd == "train"):
