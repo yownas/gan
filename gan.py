@@ -166,7 +166,7 @@ def save_plot(examples, epoch, n):
         pyplot.subplot(n, n, i+1)
         pyplot.axis("off")
 
-        if IMC_C == 1:
+        if IMG_C == 1:
             pyplot.gray()
             img = examples[i].squeeze(axis=-1) # (x, y 1) -> (x, y)
         else:
