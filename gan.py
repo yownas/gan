@@ -262,9 +262,12 @@ if __name__ == "__main__":
 
         projpath = os.path.join(projdir, opt1)  
         exec(open(os.path.join(projpath, "config.py")).read())
+        exec(open(os.path.join(projpath, "state.py")).read())
 
-        # FIXME
         # Check if there is a state already, refuse to overwrite
+        if plot_offset > 0:
+            print("Refusing to train started project from start.")
+            sys.exit(1)
 
         d_model = build_discriminator()
         g_model = build_generator(latent_dim)
