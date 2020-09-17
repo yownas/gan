@@ -16,10 +16,10 @@ w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.02)
 def load_image(image_path):
     img = tf.io.read_file(image_path)
     if IMG_C == 1:
-        img = tf.io.decode_jpeg(img, channels=1)
+#        img = tf.io.decode_jpeg(img, channels=1)
         img = tf.io.decode_png(img, channels=1)
     else:
-        img = tf.io.decode_jpeg(img)
+#        img = tf.io.decode_jpeg(img)
         img = tf.io.decode_png(img, channels=3)
     img = tf.image.resize(img, [IMG_H, IMG_W])
     img = tf.cast(img, tf.float32)
