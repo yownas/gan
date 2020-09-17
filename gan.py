@@ -211,6 +211,7 @@ if __name__ == "__main__":
    
     projdir = "projects"
     n_samples = 1
+    plot_offset=0
 
     try:
         cmd = sys.argv[1]
@@ -275,7 +276,6 @@ if __name__ == "__main__":
         # Make some noise
         noise = np.random.normal(size=(n_samples, latent_dim))
         np.save(os.path.join(projpath, "model", "noise.npy"), noise)
-        plot_offset=0
 
         num_epochs = int(opt2)
         print("Training",opt1,"for",str(num_epochs),"epochs.")
