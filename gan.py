@@ -16,12 +16,13 @@ w_init = tf.keras.initializers.RandomNormal(mean=0.0, stddev=0.02)
 def load_image(image_path):
     img = tf.io.read_file(image_path)
     if IMG_C == 1:
+# FIXME Hm....
 #        img = tf.io.decode_jpeg(img, channels=1)
         img = tf.io.decode_png(img, channels=1)
     else:
 #        img = tf.io.decode_jpeg(img)
         img = tf.io.decode_png(img, channels=3)
-    img = tf.image.resize(img, [IMG_H, IMG_W])
+    img = tf.image.resize(img, [IMG_H, IMG_W], preserve_aspect_ratio=False)
     img = tf.cast(img, tf.float32)
     img = (img - 127.5) / 127.5
     return img
@@ -66,7 +67,8 @@ def conv_block(inputs, num_filters, kernel_size, padding="same", strides=2, acti
 
 def build_generator(latent_dim):
     f = [2**i for i in range(5)][::-1]
-    filters = 32
+    #filters = 32
+    filters = (IMG_W + IMG_H) / 4
     output_strides = 16
     h_output = IMG_H // output_strides
     w_output = IMG_W // output_strides
@@ -182,7 +184,7 @@ def save_plot(examples, epoch, n):
     pyplot.close()
 
 def usage():
-    print("gan.py help | create <project> | train|resume <project> <epochs>")
+    print("gan.py help | create <project> | train <project> <epochs>")
     sys.exit(1)
 
 if __name__ == "__main__":
@@ -194,13 +196,8 @@ if __name__ == "__main__":
     #   help
     # Create stub folders for new project
     #   create <project>
-    # Start training new project
+    # Start or resume training a project
     #   train <project> <epochs>
-    # Load project and continue (read status.py)
-    #   resume <project> <epochs>
-
-    # FIXME
-    # Read global config from cwd?
 
     # Default values
     IMG_H = 64
@@ -267,69 +264,26 @@ if __name__ == "__main__":
         exec(open(os.path.join(projpath, "config.py")).read())
         exec(open(os.path.join(projpath, "state.py")).read())
 
-        # Check if there is a state already, refuse to overwrite
+        # Check if there is a state already, resume training
         if plot_offset > 0:
-            print("Refusing to train started project from start.")
-            sys.exit(1)
-
-        d_model = build_discriminator()
-        g_model = build_generator(latent_dim)
-
-        # Make some noise
-        noise = np.random.normal(size=(n_samples, latent_dim))
-        np.save(os.path.join(projpath, "model", "noise.npy"), noise)
+            d_model.load_weights(os.path.join(projpath, "model", "d_model.h5"))
+            g_model.load_weights(os.path.join(projpath, "model", "g_model.h5"))
+            noise = np.load(os.path.join(projpath, "model/noise.npy"))
+        else: 
+            d_model = build_discriminator()
+            g_model = build_generator(latent_dim)
+            # Make some noise
+            noise = np.random.normal(size=(n_samples, latent_dim))
+            np.save(os.path.join(projpath, "model", "noise.npy"), noise)
 
         num_epochs = int(opt2)
         print("Training",opt1,"for",str(num_epochs),"epochs.")
 
-    elif (cmd == "resume"):
-        try:
-            opt1 = sys.argv[2]
-            opt2 = sys.argv[3]
-        except:
-            usage()
 
-        projpath = os.path.join(projdir, opt1)  
-        exec(open(os.path.join(projpath, "config.py")).read())
-        exec(open(os.path.join(projpath, "state.py")).read())
-
-        d_model = build_discriminator()
-        g_model = build_generator(latent_dim)
-
-        d_model.load_weights(os.path.join(projpath, "model", "d_model.h5"))
-        g_model.load_weights(os.path.join(projpath, "model", "g_model.h5"))
-
-        noise = np.load(os.path.join(projpath, "model/noise.npy"))
-
-        num_epochs = int(opt2)
-        print("Resume training",opt1,"for",str(num_epochs),"epochs.")
-
-    # ?
-    # Show status of project and exit
-    #   status <project>
-    # Copy project (not data)
-    #   copy <project> <new project>
-
+    # Start working....
     data = os.path.join(projpath, "data")
     images_path = glob(data+"/*.jpg")
     images_path.extend(glob(data+"/*.png"))
-
-    ############################
-
-    # Read old model & noise? CHANGE PLOT OFFSET
-#    if (True):
-#    #if (False):
-#        plot_offset=200
-#        d_model.load_weights("saved_model/d_model.h5")
-#        g_model.load_weights("saved_model/g_model.h5")
-#        noise = np.load("saved_model/noise.npy")
-#    else:
-#        # Make some noise
-#        noise = np.random.normal(size=(n_samples, latent_dim))
-#        np.save("saved_model/noise", noise)
-#        plot_offset=0
-
-    #############################
 
     d_model.summary()
     g_model.summary()
@@ -346,8 +300,6 @@ if __name__ == "__main__":
     for epoch in range(num_epochs):
         print("\nEPOCH %i/%i\n" % (epoch, num_epochs))
         gan.fit(images_dataset, epochs=epochs_per_epoch)
-        #g_model.save("saved_model/g_model.h5")
-        #d_model.save("saved_model/d_model.h5")
         g_model.save(os.path.join(projpath, "model/g_model.h5"))
         d_model.save(os.path.join(projpath, "model/d_model.h5"))
 
